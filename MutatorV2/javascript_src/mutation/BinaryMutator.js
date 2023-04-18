@@ -13,6 +13,8 @@ class BinaryMutator extends Mutator {
     this.currentIndex = 0;
     this.mutationPoint = undefined;
     this.previousValue = undefined;
+
+    this.initialValue = undefined;
   }
 
   /*** IMPLEMENTATION OF INSTANCE METHODS ***/
@@ -24,11 +26,11 @@ class BinaryMutator extends Mutator {
       this.mutationPoints.push($joinpoint);
       debug(
         "Adicionou um ponto de mutação " +
-          this.$expr +
-          " a " +
-          $joinpoint +
-          " na linha " +
-          $joinpoint.line
+        this.$expr +
+        " a " +
+        $joinpoint +
+        " na linha " +
+        $joinpoint.line
       );
       return true;
     }
@@ -52,17 +54,32 @@ class BinaryMutator extends Mutator {
   }
 
   _mutatePrivate() {
+
     this.mutationPoint = this.mutationPoints[this.currentIndex];
+    println("mtBinary" + this.mutationPoint);
+    if (this.currentIndex == 0) {
+      this.initialValue = this.mutationPoint.operator;
+    }
+    println("initialValue" + this.initialValue);
     this.currentIndex++;
+
 
     debug(`${this.getName()}: from ${this.mutationPoint} to ${this.$expr}`);
 
     this.previousValue = this.mutationPoint.operator;
     this.mutationPoint.operator = this.$expr;
+
+    println("/*--------------------------------------*/");
+    println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
+      + " to " + this.mutationPoint);
+    println("/*--------------------------------------*/");
+
   }
 
   _restorePrivate() {
-    this.mutationPoint.operator = this.previousValue;
+
+    println("Restore_mutationPoint " + this.mutationPoint)
+    this.mutationPoint.operator = this.initialValue;
     this.previousValue = undefined;
     this.mutationPoint = undefined;
   }
