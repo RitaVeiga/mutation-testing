@@ -1,4 +1,3 @@
-
 laraImport("mutation.InvalidKeyIntentPutExtraOperatorMutator");
 laraImport("mutation.InvalidValueIntentPutExtraOperatorMutator");
 laraImport("mutation.IntentPayloadReplacementOperatorMutator");
@@ -40,7 +39,7 @@ var Mutators=[
 //new StringArgumentReplacementOperatorMutator(),
 ];
 
-        
+
   let mutationPoints = 0;
 
   for (var jp of Query.root().descendants) {
@@ -60,15 +59,15 @@ var Mutators=[
 
 
 
-  
+
     let needElseIf = false;
     let firstTime = true;
-    
+
 if (mutationPoints >= 2) {
       needElseIf = true;
     }
 
-   
+
     for (mutator of Mutators) {
 
    // println(mutator);
@@ -77,15 +76,15 @@ if (mutationPoints >= 2) {
         mutationPoints++;
        // println(mutationPoints);
     //    println(jp);
-       
+
    //  println(jp.ast);
 
       }
     }
 
-    
 
- 
+
+
     for (mutator of Mutators) {
     // println(mutator.addJp(jp));
       while (mutator.hasMutations()) {
@@ -96,13 +95,13 @@ if (mutationPoints >= 2) {
  // println(jp);
         mutator.mutate();
 // println("AAAAAAA"+jp.ast);
-        
-        
+
+
 
         var mutated = mutator.getMutationPoint().isStatement
           ? mutator.getMutationPoint()
           : mutator.getMutationPoint().ancestor("statement");
- 
+
         let mutantId =
           mutator.getName() +
           "_" +
@@ -111,7 +110,7 @@ if (mutationPoints >= 2) {
           Strings.uuid();
 
 
- 
+
         if (needElseIf) {
           if (mutationPoints > 1) {
             if (firstTime) {
@@ -154,10 +153,10 @@ if (mutationPoints >= 2) {
           );
           mutated.insertAfter("}");
         }
-      }
+      } mutator.restore();
     }
 
-    
+
 saveFile(mutator);
     }
 
@@ -177,6 +176,3 @@ let relativePath = Io.getRelativePath(filePath, projectPath);
     Query.root().code
   );
 }
-
-   
- 
