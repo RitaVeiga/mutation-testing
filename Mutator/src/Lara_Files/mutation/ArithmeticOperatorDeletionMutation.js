@@ -16,8 +16,7 @@ class ArithmeticOperatorDeletionMutation extends IterativeMutation {
 		return $jp.instanceOf("binaryExpression");
 	}
 
-	// = function* 
-	mutate($jp) {
+	*mutate($jp) {
 
 
 		let leftOperand = $jp.lhs.copy();
@@ -26,7 +25,7 @@ class ArithmeticOperatorDeletionMutation extends IterativeMutation {
 		debug("Mutating operator: " + $jp + " to " + leftOperand);
 		debug("/*--------------------------------------*/");
 
-		return new MutationResult(leftOperand);
+		yield new MutationResult(leftOperand);
 
 
 		let rightOperand = $jp.rhs.copy();
@@ -35,6 +34,6 @@ class ArithmeticOperatorDeletionMutation extends IterativeMutation {
 		debug("Mutating operator: " + $jp + " to " + rightOperand);
 		debug("/*--------------------------------------*/");
 
-		return new MutationResult(rightOperand);
+		yield new MutationResult(rightOperand);
 	}
 }

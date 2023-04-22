@@ -1,22 +1,25 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+laraImport("weaver.Query");
 laraImport("weaver.Weaver");
 
-class NullIntentOperatorMutator extends Mutator {
-    constructor() {
-        super("NullIntentOperatorMutator");
+class AssignmentOperatorMutator extends Mutator {
+    constructor($original, $result) {
+        super("AssignmentOperatorMutator");
 
+        this.$original = $original;
+        this.$expr = $result;
         this.mutationPoints = [];
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
-        this.initialValue = undefined;
     }
 
+    /*** IMPLEMENTATION OF INSTANCE METHODS ***/
     addJp($joinpoint) {
         if (
-            $joinpoint.type === "Intent" && $joinpoint.instanceOf('expression') && !$joinpoint.instanceOf('var')
+            $joinpoint.instanceOf("opAssignment") &&
+            $joinpoint.operator === this.$original
         ) {
             this.mutationPoints.push($joinpoint);
             debug(
@@ -50,40 +53,21 @@ class NullIntentOperatorMutator extends Mutator {
 
     _mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
-
-        if (this.currentIndex == 0) {
-            this.initialValue = this.mutationPoint;
-            println("initialValueIntent   " + this.initialValue);
-
-        }
-
         this.currentIndex++;
 
+        debug(`${this.getName()}: from ${this.mutationPoint} to ${this.$expr}`);
 
-        this.originalParent = this.mutationPoint.copy();
-
-        this.mutationPoint = this.mutationPoint.insertReplace("null");
-
-
-        println("/*--------------------------------------*/");
-        println("Mutating operator n." + this.currentIndex + ": " + this.originalParent
-            + " to " + this.mutationPoint);
-        println("/*--------------------------------------*/");
-
-
+        this.previousValue = this.mutationPoint.operator;
+        this.mutationPoint.operator = this.$expr;
     }
 
-
-
     _restorePrivate() {
-
-        this.mutationPoint = this.initialValue;
-        println("Restore_mutationPoint " + this.mutationPoint)
+        this.mutationPoint.operator = this.previousValue;
         this.previousValue = undefined;
-
+        this.mutationPoint = undefined;
     }
 
     toString() {
-        return `Null Intent Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `Assignment Operator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
     }
 }

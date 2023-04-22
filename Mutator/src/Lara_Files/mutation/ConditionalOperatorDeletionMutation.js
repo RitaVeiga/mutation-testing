@@ -24,8 +24,7 @@ class ConditionalOperatorDeletionMutation extends IterativeMutation {
 		return false;
 	}
 
-	//function*
-	mutate($jp) {
+	*mutate($jp) {
 
 		let mutation = $jp.copy;
 
@@ -35,7 +34,7 @@ class ConditionalOperatorDeletionMutation extends IterativeMutation {
 		debug("Mutating operator: " + $jp + " to " + mutation);
 		debug("/*--------------------------------------*/");
 
-		return new MutationResult(mutation);
+		yield new MutationResult(mutation);
 
 	}
 }

@@ -4,10 +4,10 @@ laraImport("weaver.WeaverJps");
 
 laraImport("weaver.Weaver");
 
-class ArithmeticOperatorDeletionMutator extends Mutator {
+class BinaryOperatorDeletionMutator extends Mutator {
     //Parent constructor
     constructor() {
-        super("ArithmeticOperatorDeletionMutator");
+        super("BinaryOperatorDeletionMutator");
 
         this.newValue = undefined;
         this.mutationPoints = [];

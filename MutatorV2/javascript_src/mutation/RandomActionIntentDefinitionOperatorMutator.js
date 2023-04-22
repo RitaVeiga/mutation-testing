@@ -3,20 +3,25 @@ laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
 
-class NullIntentOperatorMutator extends Mutator {
+class RandomActionIntentDefinitionOperatorMutator extends Mutator {
     constructor() {
-        super("NullIntentOperatorMutator");
+        super("RandomActionIntentDefinitionOperatorMutator");
 
         this.mutationPoints = [];
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
-        this.initialValue = undefined;
     }
+
+    /*&&
+            $joinpoint.typeReference === "Intent" &&
+            $joinpoint.name === "<init>"
+            && $joinpoint.type === "Executable"
+    /*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
     addJp($joinpoint) {
         if (
-            $joinpoint.type === "Intent" && $joinpoint.instanceOf('expression') && !$joinpoint.instanceOf('var')
+  $joinpoint.type === "Intent" && $joinpoint.instanceOf('expression') && !$joinpoint.instanceOf('var') 
         ) {
             this.mutationPoints.push($joinpoint);
             debug(
@@ -49,20 +54,18 @@ class NullIntentOperatorMutator extends Mutator {
     }
 
     _mutatePrivate() {
+
+       let  randomValue = (Math.random() + 1).toString(36).substring(7);
+
         this.mutationPoint = this.mutationPoints[this.currentIndex];
-
-        if (this.currentIndex == 0) {
-            this.initialValue = this.mutationPoint;
-            println("initialValueIntent   " + this.initialValue);
-
-        }
-
         this.currentIndex++;
 
+        println(" this.mutationPoint" + this.mutationPoint);
 
         this.originalParent = this.mutationPoint.copy();
 
-        this.mutationPoint = this.mutationPoint.insertReplace("null");
+        println(" this.originalParent" + this.originalParent);
+        this.mutationPoint = this.mutationPoint.insertReplace( randomValue);
 
 
         println("/*--------------------------------------*/");
@@ -71,19 +74,18 @@ class NullIntentOperatorMutator extends Mutator {
         println("/*--------------------------------------*/");
 
 
+        println(" this.mutationPoint" + this.mutationPoint);
     }
 
 
 
     _restorePrivate() {
-
-        this.mutationPoint = this.initialValue;
-        println("Restore_mutationPoint " + this.mutationPoint)
+        //this.mutationPoint.operator = this.previousValue;
         this.previousValue = undefined;
-
+        this.mutationPoint = undefined;
     }
 
     toString() {
-        return `Null Intent Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `Random Action Intent Definition Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
     }
 }

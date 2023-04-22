@@ -3,31 +3,42 @@ laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
 
-class NullIntentOperatorMutator extends Mutator {
+class NullValueIntentOperatorMutator extends Mutator {
     constructor() {
-        super("NullIntentOperatorMutator");
+        super("NullValueIntentOperatorMutator");
 
         this.mutationPoints = [];
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
-        this.initialValue = undefined;
     }
 
+    /*&&
+            $joinpoint.typeReference === "Intent" &&
+            $joinpoint.name === "<init>"
+            && $joinpoint.type === "Executable"
+    /*** IMPLEMENTATION OF INSTANCE METHODS ***/
+
     addJp($joinpoint) {
-        if (
-            $joinpoint.type === "Intent" && $joinpoint.instanceOf('expression') && !$joinpoint.instanceOf('var')
+
+
+        if ($joinpoint.type === "Intent" && $joinpoint.instanceOf('expression') && !$joinpoint.instanceOf('var')
         ) {
-            this.mutationPoints.push($joinpoint);
-            debug(
-                "Adicionou um ponto de mutação " +
-                this.$expr +
-                " a " +
-                $joinpoint +
-                " na linha " +
-                $joinpoint.line
-            );
-            return true;
+            if (jp.children[0].name === "<init>" && jp.children[0].type === "Executable") {
+
+
+                this.mutationPoints.push(jp.children[2]);
+
+                debug(
+                    "Adicionou um ponto de mutação " +
+                    this.$expr +
+                    " a " +
+                    $joinpoint +
+                    " na linha " +
+                    $joinpoint.line
+                );
+                return true;
+            }
         }
         return false;
     }
@@ -50,19 +61,11 @@ class NullIntentOperatorMutator extends Mutator {
 
     _mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
-
-        if (this.currentIndex == 0) {
-            this.initialValue = this.mutationPoint;
-            println("initialValueIntent   " + this.initialValue);
-
-        }
-
         this.currentIndex++;
-
 
         this.originalParent = this.mutationPoint.copy();
 
-        this.mutationPoint = this.mutationPoint.insertReplace("null");
+        this.mutationPoint = this.mutationPoint.insertReplace("new Parcelable[0]");
 
 
         println("/*--------------------------------------*/");
@@ -71,19 +74,18 @@ class NullIntentOperatorMutator extends Mutator {
         println("/*--------------------------------------*/");
 
 
+        println(" this.mutationPoint" + this.mutationPoint);
     }
 
 
 
     _restorePrivate() {
-
-        this.mutationPoint = this.initialValue;
-        println("Restore_mutationPoint " + this.mutationPoint)
+        //this.mutationPoint.operator = this.previousValue;
         this.previousValue = undefined;
-
+        this.mutationPoint = undefined;
     }
 
     toString() {
-        return `Null Intent Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `Null Value Intent Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
     }
 }
