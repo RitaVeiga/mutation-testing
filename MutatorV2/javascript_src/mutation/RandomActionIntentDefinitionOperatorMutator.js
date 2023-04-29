@@ -21,7 +21,7 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
 
     addJp($joinpoint) {
         if (
-  $joinpoint.type === "Intent" && $joinpoint.instanceOf('expression') && !$joinpoint.instanceOf('var') 
+            $joinpoint.type === "Intent" && $joinpoint.instanceOf('expression') && !$joinpoint.instanceOf('var')
         ) {
             this.mutationPoints.push($joinpoint);
             debug(
@@ -55,21 +55,20 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
 
     _mutatePrivate() {
 
-       let  randomValue = (Math.random() + 1).toString(36).substring(7);
+        let randomValue = (Math.random() + 1).toString(36).substring(7);
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
         this.currentIndex++;
 
-        println(" this.mutationPoint" + this.mutationPoint);
 
-        this.originalParent = this.mutationPoint.copy();
+        this.previousValue = this.mutationPoint.copy();
 
-        println(" this.originalParent" + this.originalParent);
-        this.mutationPoint = this.mutationPoint.insertReplace( randomValue);
+
+        this.mutationPoint = this.mutationPoint.insertReplace(randomValue);
 
 
         println("/*--------------------------------------*/");
-        println("Mutating operator n." + this.currentIndex + ": " + this.originalParent
+        println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
             + " to " + this.mutationPoint);
         println("/*--------------------------------------*/");
 
@@ -80,7 +79,7 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
 
 
     _restorePrivate() {
-        //this.mutationPoint.operator = this.previousValue;
+        this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;
     }

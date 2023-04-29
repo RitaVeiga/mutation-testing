@@ -13,34 +13,31 @@ class StringArgumentReplacementOperatorMutator extends Mutator {
         this.previousValue = undefined;
     }
 
-    addJp($joinpoint) {
+    addJp(joinpoint) {
 
 
-        if ($joinpoint.instanceOf('callStatement')) {
-
-            println($joinpoint.ast);
-            if ($joinpoint.call.children[0].type == 'String') {
-                println("aqui");
-                this.mutationPoints.push($joinpoint.call.children[0]);
+        if (joinpoint.instanceOf('callStatement')) {
 
 
-                debug(
-                    "Adicionou um ponto de mutação " +
-                    this.$expr +
-                    " a " +
-                    $joinpoint +
-                    " na linha " +
-                    $joinpoint.line
-                );
-                return true;
+            for (const element of joinpoint.call.children) {
+
+
+                if (element.type == 'String') {
+                    this.mutationPoints.push(element);
+
+                }
+                for (let j = 0; j < element.children.length; j++) {
+
+                    if (element.children[j].type == 'String') {
+                        this.mutationPoints.push(element.children[j]);
+                        return true;
+                    }
+                }
+
             }
         }
-
-
-
         return false;
     }
-
     hasMutations() {
         return this.currentIndex < this.mutationPoints.length;
     }
@@ -63,14 +60,13 @@ class StringArgumentReplacementOperatorMutator extends Mutator {
 
         this.currentIndex++;
 
-        this.originalParent = this.mutationPoint.copy();
+        this.previousValue = this.mutationPoint.copy();
 
-        println(" this.originalParent" + this.originalParent);
         this.mutationPoint = this.mutationPoint.insertReplace("\"\"");
 
 
         println("/*--------------------------------------*/");
-        println("Mutating operator n." + this.currentIndex + ": " + this.originalParent
+        println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
             + " to " + this.mutationPoint);
         println("/*--------------------------------------*/");
 
@@ -79,7 +75,7 @@ class StringArgumentReplacementOperatorMutator extends Mutator {
     }
 
     _restorePrivate() {
-        //this.mutationPoint.operator = this.previousValue;
+        this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;
     }

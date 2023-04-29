@@ -1,15 +1,14 @@
 package app.operators;
 
-import org.suikasoft.jOptions.Datakey.DataKey;
-import org.suikasoft.jOptions.Datakey.KeyFactory;
-import org.suikasoft.jOptions.Interfaces.DataStore;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.suikasoft.jOptions.Datakey.DataKey;
+import org.suikasoft.jOptions.Datakey.KeyFactory;
+import org.suikasoft.jOptions.Interfaces.DataStore;
 
-public final class RemoveConditionalMutator extends Operators{
+public final class RemoveConditionalMutator extends Operators {
 
     /***
      * Conditional Operators
@@ -18,7 +17,6 @@ public final class RemoveConditionalMutator extends Operators{
     private static List<String> identifiers = new ArrayList<>();
     private static final String DESCRIPTION = "Remove Conditional Mutator";
     public static final String MUTATOR_TYPE = "RemoveConditionalMutator";
-
 
     @Override
     public List<List<String>> getMutators() {
@@ -31,13 +29,12 @@ public final class RemoveConditionalMutator extends Operators{
     }
 
     @Override
-    public List<DataKey> getDataKeys()  {
+    public List<DataKey> getDataKeys() {
         List<DataKey> dataKeysList = new ArrayList<>();
 
         identifiers.add(getDescription());
         dataKeysList.add(
-                KeyFactory.bool(getDescription()).setLabel(getDescription())
-        );
+                KeyFactory.bool(getDescription()).setLabel(getDescription()));
 
         return dataKeysList;
     }
@@ -52,7 +49,7 @@ public final class RemoveConditionalMutator extends Operators{
         return DESCRIPTION;
     }
 
-        @Override
+    @Override
     public String getMutatorType() {
         return MUTATOR_TYPE;
     }
@@ -61,10 +58,10 @@ public final class RemoveConditionalMutator extends Operators{
     public String getMutatorString(DataStore dataStore) {
         StringBuilder mutatorString = new StringBuilder();
 
-        for (String identifier : this.getIdentifiers()){
+        for (String identifier : this.getIdentifiers()) {
             Boolean selectedMutators = (Boolean) dataStore.get(identifier);
 
-            if(selectedMutators)
+            if (selectedMutators)
                 mutatorString
                         .append("\tnew ")
                         .append(this.getMutatorType())

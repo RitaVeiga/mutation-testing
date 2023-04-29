@@ -63,13 +63,13 @@ class NullValueIntentOperatorMutator extends Mutator {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
         this.currentIndex++;
 
-        this.originalParent = this.mutationPoint.copy();
+        this.previousValue = this.mutationPoint.copy();
 
         this.mutationPoint = this.mutationPoint.insertReplace("new Parcelable[0]");
 
 
         println("/*--------------------------------------*/");
-        println("Mutating operator n." + this.currentIndex + ": " + this.originalParent
+        println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
             + " to " + this.mutationPoint);
         println("/*--------------------------------------*/");
 
@@ -80,7 +80,7 @@ class NullValueIntentOperatorMutator extends Mutator {
 
 
     _restorePrivate() {
-        //this.mutationPoint.operator = this.previousValue;
+        this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;
     }

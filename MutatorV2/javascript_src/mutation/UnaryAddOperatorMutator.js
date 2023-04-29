@@ -19,17 +19,20 @@ class UnaryAddOperatorMutator extends Mutator {
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
     addJp($joinpoint) {
         println("type" + $joinpoint.joinPointType);
-        if (
-            !$joinpoint.instanceOf("var") && !$joinpoint.instanceOf("literal")
+        // based on https://docs.oracle.com/javase/tutorial/java/nutsandbolts/op1.html
+        if (!this.operator == "++" || !this.operator == "--" || !this.operator == "-" || !this.operator == "+" || !this.operator == "!") {
+            return false;
+        }
+
+        if (!$joinpoint.instanceOf("var") && !$joinpoint.instanceOf("literal")
         ) {
             return false;
         }
 
-        // if($joinpoint.typeReference.isBoolean) {
-
-        this.mutationPoints.push($joinpoint);
-        println("Adicionou um ponto de mutação " + $joinpoint + " na linha " + $joinpoint.line);
-        return true;
+        if ($joinpoint.isBoolean && this.operator === "!") {
+            this.mutationPoints.push($joinpoint);
+            return true;
+        }
 
     }
 
