@@ -4,37 +4,61 @@ laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
 
 class BinaryMutator extends Mutator {
+
   constructor($original, $result) {
     super("BinaryMutator");
 
     this.$original = $original;
-    this.$expr = $result;
+    this.$result = $result;
     this.mutationPoints = [];
     this.currentIndex = 0;
     this.mutationPoint = undefined;
     this.previousValue = undefined;
 
+    this.arithmeticOperators = ["+", "-", "*", "/", "%"];
+    this.bitwiseOperators = ["&", "|", "<<", ">>"];
+    this.comparisonOperators = ["==", "!=", ">", "<", ">=", "<="];
+    this.logicalOperators = ["&&", "||"];
+    this.assignmentOperators = ["=", "+=", "-=", "*=", "/=", "%="];
   }
+
+
+
 
   /*** IMPLEMENTATION OF INSTANCE METHODS ***/
   addJp($joinpoint) {
+
+
     if (
       $joinpoint.instanceOf("binaryExpression") &&
       $joinpoint.operator === this.$original
     ) {
-      this.mutationPoints.push($joinpoint);
-      debug(
-        "Adicionou um ponto de mutação " +
-        this.$expr +
-        " a " +
-        $joinpoint +
-        " na linha " +
-        $joinpoint.line
-      );
+
+      if (this.arithmeticOperators.contains(this.$original) && this.arithmeticOperators.contains(this.$result) && !($joinpoint.type === "String")) {
+
+        this.mutationPoints.push($joinpoint);
+      }
+      else if (this.bitwiseOperators.contains(this.$original) && this.bitwiseOperators.contains(this.$result)) {
+
+        this.mutationPoints.push($joinpoint);
+      }
+      else if (this.comparisonOperators.contains(this.$original) && this.comparisonOperators.contains(this.$result)) {
+        this.mutationPoints.push($joinpoint);
+
+      } else if (this.logicalOperators.contains(this.$original) && this.logicalOperators.contains(this.$result)) {
+        this.mutationPoints.push($joinpoint);
+      }
+      else if (this.assignmentOperators.contains(this.$original) && this.assignmentOperators.contains(this.$result)) {
+        this.mutationPoints.push($joinpoint);
+      }
+      else {
+        println("First Operator cannot be replaced with the Second one");
+        return false;
+      }
       return true;
     }
-    return false;
   }
+
 
   hasMutations() {
     return this.currentIndex < this.mutationPoints.length;
@@ -61,7 +85,7 @@ class BinaryMutator extends Mutator {
     //debug(`${this.getName()}: from ${this.mutationPoint} to ${this.$expr}`);
 
     this.previousValue = this.mutationPoint.operator;
-    this.mutationPoint.operator = this.$expr;
+    this.mutationPoint.operator = this.$result;
 
     println("/*--------------------------------------*/");
     println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
@@ -80,6 +104,6 @@ class BinaryMutator extends Mutator {
   }
 
   toString() {
-    return `BinaryMutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+    return `BinaryMutator from ${this.$original} to ${this.$result}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
   }
 }
