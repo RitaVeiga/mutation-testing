@@ -137,5 +137,12 @@ class NonVoidCallMutator extends Mutator {
 			return undefined;
 		}
 	}
+
+	toJson() {
+		return {
+			mutationOperatorArgumentsList: [],
+			operator: this.name,
+		};
+	}
 }
 

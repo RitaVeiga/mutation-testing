@@ -91,4 +91,11 @@ class InvalidKeyIntentPutExtraOperatorMutator extends Mutator {
     toString() {
         return `Invalid Key Intent Put Extra Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
     }
+
+    toJson() {
+        return {
+            mutationOperatorArgumentsList: [],
+            operator: this.name,
+        };
+    }
 }

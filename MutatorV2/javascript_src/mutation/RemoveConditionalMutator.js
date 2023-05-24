@@ -70,4 +70,12 @@ class RemoveConditionalMutator extends Mutator {
 			}
 		}
 	}
+
+
+	toJson() {
+		return {
+			mutationOperatorArgumentsList: [],
+			operator: this.name,
+		};
+	}
 }

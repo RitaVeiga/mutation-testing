@@ -59,7 +59,6 @@ class BinaryOperatorDeletionMutator extends Mutator {
             this.currentIndex++;
         }
 
-        //this.newValue = copy;
 
         println("/*--------------------------------------*/");
         println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
@@ -74,6 +73,12 @@ class BinaryOperatorDeletionMutator extends Mutator {
         this.newValue.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.newValue = undefined;
-        //this.isFirst = false;
+    }
+
+    toJson() {
+        return {
+            mutationOperatorArgumentsList: [],
+            operator: this.name,
+        };
     }
 }

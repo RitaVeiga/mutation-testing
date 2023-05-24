@@ -4,15 +4,10 @@ laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
 
 class ConstantMutator extends Mutator {
-  constructor($expr) {
+  constructor(expr) {
     super("ConstantMutator");
-    //Parent constructor
-    Mutator.call(this);
 
-    checkDefined($expr, "ConstantMutator");
-
-
-    this.$expr = $expr;
+    this.expr = expr;
     this.newValue = undefined;
     this.mutationPoints = [];
     this.currentIndex = 0;
@@ -20,33 +15,31 @@ class ConstantMutator extends Mutator {
   }
 
 
-  addJp($joinpoint) {
-    if (
-      $joinpoint.instanceOf("field") ||
-      $joinpoint.instanceOf("localVariable")
+  addJp(joinpoint) {
+    if (joinpoint.instanceOf("field") ||
+      joinpoint.instanceOf("localVariable")
     ) {
-      println("Potato" + $joinpoint);
-      if (
-        $joinpoint.init === undefined ||
-        !$joinpoint.isFinal ||
-        !ConstantMutator._isCompatible($joinpoint.type, this.$expr.type)
+
+      if (joinpoint.init === undefined ||
+        !ConstantMutator._isCompatible(joinpoint.type, this.expr.type)
       ) {
+        println("aqui")
         return false;
       }
-      this.mutationPoints.push($joinpoint);
-      println("xxx" + $joinpoint);
+
+      this.mutationPoints.push(joinpoint);
+      println("xxx" + joinpoint);
       return true;
     }
 
-    if ($joinpoint.instanceOf("assignment")) {
+    if (joinpoint.instanceOf("assignment")) {
       if (
-        !$joinpoint.isFinal ||
-        !ConstantMutator._isCompatible($joinpoint.type, this.$expr.type)
+        !ConstantMutator._isCompatible(joinpoint.type, this.expr.type)
       ) {
         return false;
       }
 
-      this.mutationPoints.push($joinpoint);
+      this.mutationPoints.push(joinpoint);
 
       return true;
     }
@@ -55,6 +48,8 @@ class ConstantMutator extends Mutator {
   }
 
   static _isCompatible(type1, type2) {
+    println("type1: " + type1);
+    println("type2: " + type2);
     return true;
   }
 
@@ -65,20 +60,17 @@ class ConstantMutator extends Mutator {
 
   getMutationPoint() {
     if (this.isMutated) {
-      println("Potato	" + this.newValue);
       return this.newValue;
     } else {
       if (this.currentIndex < this.mutationPoints.length) {
-        println("Potato1");
         return this.mutationPoints[this.currentIndex];
       } else {
-        println("Potato2");
         return undefined;
       }
     }
   }
 
-  static _mutatePrivate() {
+  _mutatePrivate() {
     var mutationPoint = this.mutationPoints[this.currentIndex];
 
     if (
@@ -92,11 +84,11 @@ class ConstantMutator extends Mutator {
 
     this.currentIndex++;
 
-    if (isFunction(this.$expr)) {
-      var tem = this.$expr(this.previousValue);
+    if (isFunction(this.expr)) {
+      var tem = this.expr(this.previousValue);
       this.newValue = this.previousValue.insertReplace(tem);
     } else {
-      this.newValue = this.previousValue.insertReplace(this.$expr);
+      this.newValue = this.previousValue.insertReplace(this.expr);
     }
 
     println("/*--------------------------------------*/");
@@ -117,4 +109,14 @@ class ConstantMutator extends Mutator {
     this.previousValue = undefined;
     this.newValue = undefined;
   }
+
+  toJson() {
+    return {
+      mutationOperatorArgumentsList: {
+        mutationOperatorFirstArgument: this.expr,
+      },
+      operator: this.name,
+    };
+  }
+
 }

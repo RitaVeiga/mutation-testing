@@ -7,7 +7,7 @@ class ConstructorCallMutator extends Mutator {
 	//Parent constructor
 	constructor() {
 		super("ConstructorCallMutator");
-		
+
 		this.extraArgs = arrayFromArgs(arguments, 1);
 
 		this.toMutate = [];
@@ -71,5 +71,12 @@ class ConstructorCallMutator extends Mutator {
 				return undefined;
 			}
 		}
+	}
+
+	toJson() {
+		return {
+			mutationOperatorArgumentsList: [],
+			operator: this.name,
+		};
 	}
 }

@@ -88,4 +88,13 @@ class UnaryAddOperatorMutator extends Mutator {
         this.previousValue = undefined;
         this.mutationPoint = undefined;
     }
+
+    toJson() {
+        return {
+            mutationOperatorArgumentsList: {
+                mutationOperatorFirstArgument: this.operator,
+            },
+            operator: this.name,
+        };
+    }
 }

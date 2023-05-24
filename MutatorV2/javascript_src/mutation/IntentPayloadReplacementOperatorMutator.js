@@ -109,4 +109,17 @@ class IntentPayloadReplacementOperatorMutator extends Mutator {
     toString() {
         return `Intent Payload Replacement Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
     }
+
+    toJson() {
+        return {
+            mutationOperatorArgumentsList: [],
+            operator: this.name,
+        };
+    }
+    toJson() {
+        return {
+            mutationOperatorArgumentsList: [],
+            operator: this.name,
+        };
+    }
 }

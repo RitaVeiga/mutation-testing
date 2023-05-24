@@ -11,27 +11,16 @@ class NotSerializableOperatorMutator extends Mutator {
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
+        this.removedInterface = undefined;
     }
 
     addJp($joinpoint) {
 
-
-        //  println("joinpoint   " + $joinpoint.interfaces);
-
-
-        // println("joinpoint   " + $joinpoint.superClassJp);
-
-
-
         if ($joinpoint.instanceOf("class")) {
 
-            println("jointPoint type class   " + $joinpoint);
-
-            println("reference   " + $joinpoint.type);
-            if ($joinpoint.type === 'Serializable') {
-                // println("jointPoint type Serializable   " + $joinpoint);
-                //   this.mutationPoints.push($joinpoint.children[0]);
-                // return true;
+            if ($joinpoint.interfaces.contains("java.io.Serializable")) {
+                this.mutationPoints.push($joinpoint);
+                return true;
             }
         }
         return false;
@@ -41,7 +30,9 @@ class NotSerializableOperatorMutator extends Mutator {
     }
 
     getMutationPoint() {
+
         if (this.isMutated) {
+            println("this.isMutated   " + this.mutationPoint);
             return this.mutationPoint;
         } else {
             if (this.currentIndex < this.mutationPoints.length) {
@@ -53,33 +44,39 @@ class NotSerializableOperatorMutator extends Mutator {
     }
 
     _mutatePrivate() {
-
         this.mutationPoint = this.mutationPoints[this.currentIndex];
-        println("this.mutationPoint" + this.mutationPoint)
+
         this.currentIndex++;
 
-        this.previousValue = this.mutationPoint.copy();
 
-        this.mutationPoint = this.mutationPoint.insertReplace("\"\"");
+        this.previousValue = this.mutationPoint;
+
+        this.removedInterface = this.mutationPoint.removeInterface("java.io.Serializable");
 
 
         println("/*--------------------------------------*/");
-        println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
-            + " to " + this.mutationPoint);
+        println("Mutating operator n." + this.currentIndex + ": " + this.removedInterface
+            + " to " + "\"\"");
         println("/*--------------------------------------*/");
 
-
-        println(" this.mutationPoint" + this.mutationPoint);
     }
 
     _restorePrivate() {
-        this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
+        this.mutationPoint = this.mutationPoint.addImplement(this.removedInterface);
         this.previousValue = undefined;
-        this.mutationPoint = undefined;
+        this.removedInterface = undefined;
+
     }
 
 
     toString() {
         return `Not Serializable Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
     }
+    toJson() {
+        return {
+            mutationOperatorArgumentsList: [],
+            operator: this.name,
+        }
+    }
+
 }

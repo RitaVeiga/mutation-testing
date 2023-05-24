@@ -28,7 +28,7 @@ class InvalidMethodCallArgumentOperatorMutator extends Mutator {
 
             if ($joinpoint.call.children[1].instanceOf('var')) {
                 this.mutationPoints.push($joinpoint.call.children[1]);
-                println("touuuaquiii");
+
 
                 debug(
                     "Adicionou um ponto de mutação " +
@@ -93,5 +93,12 @@ class InvalidMethodCallArgumentOperatorMutator extends Mutator {
 
     toString() {
         return `Invalid Method Call Argument Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+    }
+
+    toJson() {
+        return {
+            mutationOperatorArgumentsList: [],
+            operator: this.name,
+        };
     }
 }

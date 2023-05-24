@@ -4,11 +4,11 @@ laraImport("weaver.Query");
 laraImport("weaver.Weaver");
 
 class AssignmentOperatorMutator extends Mutator {
-    constructor($original, $result) {
+    constructor(original, result) {
         super("AssignmentOperatorMutator");
 
-        this.$original = $original;
-        this.$expr = $result;
+        this.original = original;
+        this.expr = result;
         this.mutationPoints = [];
         this.currentIndex = 0;
         this.mutationPoint = undefined;
@@ -16,19 +16,19 @@ class AssignmentOperatorMutator extends Mutator {
     }
 
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
-    addJp($joinpoint) {
+    addJp(joinpoint) {
         if (
-            $joinpoint.instanceOf("opAssignment") &&
-            $joinpoint.operator === this.$original
+            joinpoint.instanceOf("opAssignment") &&
+            joinpoint.operator === this.original
         ) {
-            this.mutationPoints.push($joinpoint);
+            this.mutationPoints.push(joinpoint);
             debug(
                 "Adicionou um ponto de mutação " +
-                this.$expr +
+                this.expr +
                 " a " +
-                $joinpoint +
+                joinpoint +
                 " na linha " +
-                $joinpoint.line
+                joinpoint.line
             );
             return true;
         }
@@ -55,10 +55,15 @@ class AssignmentOperatorMutator extends Mutator {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
         this.currentIndex++;
 
-        debug(`${this.getName()}: from ${this.mutationPoint} to ${this.$expr}`);
 
         this.previousValue = this.mutationPoint.operator;
-        this.mutationPoint.operator = this.$expr;
+        this.mutationPoint.operator = this.expr;
+
+        println("/*--------------------------------------*/");
+        println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
+            + " to " + this.mutationPoint);
+        println("/*--------------------------------------*/");
+
     }
 
     _restorePrivate() {
@@ -69,5 +74,15 @@ class AssignmentOperatorMutator extends Mutator {
 
     toString() {
         return `Assignment Operator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
+    }
+
+    toJson() {
+        return {
+            mutationOperatorArgumentsList: {
+                mutationOperatorFirstArgument: this.original,
+                mutationOperatorSecondArgument: this.expr,
+            },
+            operator: this.name,
+        };
     }
 }

@@ -68,6 +68,13 @@ class RemoveNullCheck extends Mutator {
 
 	}
 
+	toJson() {
+		return {
+			mutationOperatorArgumentsList: [],
+			operator: this.name,
+		};
+	}
+
 
 	_restorePrivate() {
 		// Restore operator
