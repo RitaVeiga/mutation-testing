@@ -7,40 +7,50 @@ class ForLoopReplacementOperatorMutator extends Mutator {
     constructor() {
         super("ForLoopReplacementOperatorMutator");
 
-        this.arrayLength = 0;
         this.mutationPoints = [];
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
+        this.forStatement = undefined;
+        this.maxValue = -1;
+        this.classTypeOfIDeclaration = undefined;
     }
 
 
     addJp(joinpoint) {
 
-        //println("addJp: " + joinpoint.ast);
 
-        if (((joinpoint.parent.type == "for"))) {
+        if ((joinpoint.parent.type == "for")
+        ) {
 
+            this.forStatement = joinpoint.parent;
+
+            if (this.maxValue == -1) {
+                if (joinpoint.instanceOf('expression') && joinpoint.type == "boolean" && joinpoint.children[2].instanceOf('literal')) {
+                    this.maxValue = joinpoint.children[2];
+                    println("if1" + this.maxValue);
+
+                }
+
+            }
 
             if (joinpoint.instanceOf('statement') && joinpoint.instanceOf("localVariable")) {
 
+                println("if2: " + this.maxValue);
+                const iDeclaration = joinpoint.copy().toString();
+                this.classTypeOfIDeclaration = iDeclaration.split("=")[0];
                 if (joinpoint.children[1].instanceOf('literal')) {
-                    // println("addJp: " + joinpoint.children[1]);
-                    this.mutationPoints.push(joinpoint.children[1]);
-                }
-
-            }
-            if (joinpoint.instanceOf('expression') && joinpoint.type == "boolean") {
-                println("AQYUIIIIIIIIIIII: " + joinpoint.ast);
-
-                if (joinpoint.children[1].instanceOf('literal')) {
-                    println("addJp: " + joinpoint.children[1]);
-                    // this.arrayLength = joinpoint.children[1];
-                    this.mutationPoints.push(joinpoint.children[1]);
+                    this.mutationPoints.push(joinpoint);
                 }
             }
-            println("addJp: " + joinpoint.ast);
+
+
         }
+        if (this.mutationPoints.length > 0) {
+            return true;
+        }
+
+
         return false;
     }
 
@@ -61,22 +71,27 @@ class ForLoopReplacementOperatorMutator extends Mutator {
     }
 
     _mutatePrivate() {
-        let randomIndex = Math.floor(Math.random() * (3 + 1));
-
         this.mutationPoint = this.mutationPoints[this.currentIndex];
-        println("this.random" + randomIndex);
+        const number = this.mutationPoint.toString().split("=")[1].trim();
 
+        if (this.maxValue == -1 && number == 0) {
+            this.maxValue = 1;
+        }
+        
+        var randomNumber = Math.floor(Math.random() * (this.maxValue - 0 + 1)) + 0;
 
-        this.previousValue = this.mutationPoint.copy();
-        println("this.previousValue" + this.previousValue);
+        this.previousValue = this.forStatement.toString();
 
-        println("qqq" + this.previousValue == randomIndex)
-
-        while (this.previousValue == randomIndex) {
-            randomIndex = Math.floor(Math.random() * (5 + 1));
+        if ((number.trim() === randomNumber.toString().trim())) {
+            randomNumber = Math.floor(Math.random() * this.maxValue);
 
         };
-        this.mutationPoint = this.mutationPoint.insertReplace(randomIndex.toString());
+
+        this.mutationPoint = this.mutationPoint.insertReplace(this.forStatement.toString().replace(this.mutationPoint.toString(), (this.classTypeOfIDeclaration + "= " + randomNumber.toString())));
+
+
+
+
         this.currentIndex++;
         println("/*--------------------------------------*/");
         println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
@@ -100,6 +115,7 @@ class ForLoopReplacementOperatorMutator extends Mutator {
     }
 
     toJson() {
+
         return {
             mutationOperatorArgumentsList: [],
             operator: this.name,

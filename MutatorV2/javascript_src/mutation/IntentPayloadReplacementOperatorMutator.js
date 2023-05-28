@@ -116,10 +116,5 @@ class IntentPayloadReplacementOperatorMutator extends Mutator {
             operator: this.name,
         };
     }
-    toJson() {
-        return {
-            mutationOperatorArgumentsList: [],
-            operator: this.name,
-        };
-    }
+  
 }
